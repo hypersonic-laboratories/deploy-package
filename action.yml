@@ -17,9 +17,11 @@ runs:
       uses: actions/checkout@v2
 
     - name: Install jq
+      shell: bash
       run: sudo apt-get install -y jq
 
     - name: Zip repository
+      shell: bash
       run: zip -r main.zip .
 
     - name: Request presigned URL
@@ -35,12 +37,14 @@ runs:
         echo "{package_url}={$(echo $response | jq -r '.payload.package_url')}" >> $GITHUB_OUTPUT
 
     - name: Upload zip file
+      shell: bash
       run: |
         curl --location --request PUT "${{ steps.presigned_url.outputs.upload_url }}" \
           --header "Content-Type: application/zip" \
           --data-binary "@main.zip"
 
     - name: Finish upload
+      shell: bash
       env:
         PACKAGE_NAME: ${{ inputs.package_name }}
         ACCESS_TOKEN: ${{ inputs.access_token }}
