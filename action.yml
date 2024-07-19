@@ -44,9 +44,10 @@ runs:
       env:
         PACKAGE_NAME: ${{ inputs.package_name }}
         ACCESS_TOKEN: ${{ inputs.access_token }}
+        PACKAGE_URL: ${{ steps.presigned_url.outputs.package_url }}
       run: |
         curl --location 'https://api.helixgame.com/v1/packages/upload/finish' \
           --header "Content-Type: application/json" \
           --header "Token: ${ACCESS_TOKEN}" \
-          --data "{\"url\": \"${{ steps.presigned_url.outputs.package_url }}\",\"name\": \"${PACKAGE_NAME}\"}"
+          --data "{\"url\": \"${PACKAGE_URL}\",\"name\": \"${PACKAGE_NAME}\"}"
 
