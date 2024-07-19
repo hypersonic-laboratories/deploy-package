@@ -41,21 +41,12 @@ runs:
           --header "Token: ${ACCESS_TOKEN}")
         echo "upload_url=$(echo $response | jq -r '.payload.upload_url')" >> $GITHUB_OUTPUT
         echo "package_url=$(echo $response | jq -r '.payload.package_url')" >> $GITHUB_OUTPUT
-        echo $response
-        echo $(echo $response | jq -r '.payload.upload_url')
 
     - name: Upload zip file
       shell: bash
       env:
         UPLOAD_URL: ${{ steps.presigned_url.outputs.upload_url }}
       run: |
-        echo $UPLOAD_URL
-        echo $UPLOAD_URL
-        echo $UPLOAD_URL
-        echo $UPLOAD_URL
-        echo $UPLOAD_URL
-        echo ${{ steps.presigned_url.outputs.package_url }}
-        echo ${{ steps.presigned_url.outputs }}
         curl --location --request PUT "${UPLOAD_URL}" \
           --header "Content-Type: application/zip" \
           --data-binary "@main.zip"
