@@ -47,6 +47,13 @@ runs:
       env:
         UPLOAD_URL: ${{ steps.presigned_url.outputs.upload_url }}
       run: |
+        echo $UPLOAD_URL
+        echo $UPLOAD_URL
+        echo $UPLOAD_URL
+        echo $UPLOAD_URL
+        echo $UPLOAD_URL
+        echo ${{ steps.presigned_url.outputs.package_url }}
+        echo ${{ steps.presigned_url.outputs }}
         curl --location --request PUT "${UPLOAD_URL}" \
           --header "Content-Type: application/zip" \
           --data-binary "@main.zip"
