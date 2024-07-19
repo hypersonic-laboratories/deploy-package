@@ -7,7 +7,7 @@ Tired of zipping your packages, drag'n'drop them into Hub and not knowing exactl
 In your other repository, create a workflow file that uses the custom action and provides the `package_name` and `access_token` as an input. For example, in `.github/workflows/upload.yml`:
 
 ```yaml
-name: Upload Package
+name: Upload Package to Helix
 
 on:
   push:
@@ -19,8 +19,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Use custom deploy package action
-        uses: <your-username>/deploy-package-action@main
+      - name: Use deploy package action
+        uses: hypersonic-laboratories/deploy-package@main
         with:
           access_token: ${{ secrets.ACCESS_TOKEN }}
           package_name: 'my-awesome-package'
