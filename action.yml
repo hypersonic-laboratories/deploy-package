@@ -20,6 +20,10 @@ runs:
       shell: bash
       run: sudo apt-get install -y jq
 
+    - name: Remove .files
+      shell: bash
+      run: rm -rf ./.*
+
     - name: Zip repository
       shell: bash
       run: zip -r main.zip .
@@ -38,8 +42,10 @@ runs:
 
     - name: Upload zip file
       shell: bash
+      env:
+        UPLOAD_URL: ${{ steps.presigned_url.outputs.upload_url }}
       run: |
-        curl --location --request PUT "${{ steps.presigned_url.outputs.upload_url }}" \
+        curl --location --request PUT "${UPLOAD_URL}" \
           --header "Content-Type: application/zip" \
           --data-binary "@main.zip"
 
