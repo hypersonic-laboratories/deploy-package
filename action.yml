@@ -39,8 +39,10 @@ runs:
       run: |
         response=$(curl --location "https://api.helixgame.com/v1/packages/upload/${PACKAGE_NAME}" \
           --header "Token: ${ACCESS_TOKEN}")
-        echo "{upload_url}={$(echo $response | jq -r '.payload.upload_url')}" >> $GITHUB_OUTPUT
-        echo "{package_url}={$(echo $response | jq -r '.payload.package_url')}" >> $GITHUB_OUTPUT
+        echo "upload_url=$(echo $response | jq -r '.payload.upload_url')" >> $GITHUB_OUTPUT
+        echo "package_url=$(echo $response | jq -r '.payload.package_url')" >> $GITHUB_OUTPUT
+        echo $response
+        echo $(echo $response | jq -r '.payload.upload_url')
 
     - name: Upload zip file
       shell: bash
