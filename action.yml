@@ -22,7 +22,9 @@ runs:
 
     - name: Remove .files
       shell: bash
-      run: rm -rf ./.*
+      run: |
+        rm -rf .git
+        rm -rf .github
 
     - name: Zip repository
       shell: bash
