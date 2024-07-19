@@ -1,0 +1,47 @@
+name: 'Deploy Helix Package'
+description: 'Uploads a Helix automatically'
+inputs:
+  access_token:
+    description: 'Access token for authentication. Can be generated at Account -> Settings'
+    required: true
+    type: string
+  package_name:
+    description: 'Name of the package to upload. Make sure you already have this package created'
+    required: true
+    type: string
+outputs: {}
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install jq
+      run: sudo apt-get install -y jq
+
+    - name: Zip repository
+      run: zip -r main.zip .
+
+    - name: Request presigned URL
+      id: presigned_url
+      shell: bash
+      env:
+        PACKAGE_NAME: ${{ inputs.package_name }}
+        ACCESS_TOKEN: ${{ inputs.access_token }}
+      run: |
+        response=$(curl --location "https://dev.helixgame.com/v1/packages/upload/${PACKAGE_NAME}" \
+          --header "Token: ${ACCESS_TOKEN}")
+        echo "::set-output name=url::$(echo $response | jq -r '.url')"
+
+    - name: Upload zip file
+      run: |
+        curl --location --request PUT "${{ steps.presigned_url.outputs.url }}" \
+          --header "Content-Type: application/zip" \
+          --data-binary "@main.zip"
+
+    - name: Finish upload
+      run: |
+        curl --location 'https://dev.helixgame.com/v1/packages/upload/finish' \
+          --header "Content-Type: application/json" \
+          --header "Token: ${{ inputs.access_token }}"
+
