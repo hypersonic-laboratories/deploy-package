@@ -29,19 +29,24 @@ runs:
         PACKAGE_NAME: ${{ inputs.package_name }}
         ACCESS_TOKEN: ${{ inputs.access_token }}
       run: |
-        response=$(curl --location "https://dev.helixgame.com/v1/packages/upload/${PACKAGE_NAME}" \
+        response=$(curl --location "https://api.helixgame.com/v1/packages/upload/${PACKAGE_NAME}" \
           --header "Token: ${ACCESS_TOKEN}")
-        echo "::set-output name=url::$(echo $response | jq -r '.url')"
+        echo "{upload_url}={$(echo $response | jq -r '.payload.upload_url')}" >> $GITHUB_OUTPUT
+        echo "{package_url}={$(echo $response | jq -r '.payload.package_url')}" >> $GITHUB_OUTPUT
 
     - name: Upload zip file
       run: |
-        curl --location --request PUT "${{ steps.presigned_url.outputs.url }}" \
+        curl --location --request PUT "${{ steps.presigned_url.outputs.upload_url }}" \
           --header "Content-Type: application/zip" \
           --data-binary "@main.zip"
 
     - name: Finish upload
+      env:
+        PACKAGE_NAME: ${{ inputs.package_name }}
+        ACCESS_TOKEN: ${{ inputs.access_token }}
       run: |
-        curl --location 'https://dev.helixgame.com/v1/packages/upload/finish' \
+        curl --location 'https://api.helixgame.com/v1/packages/upload/finish' \
           --header "Content-Type: application/json" \
-          --header "Token: ${{ inputs.access_token }}"
+          --header "Token: ${ACCESS_TOKEN}" \
+          --data "{\"url\": \"${{ steps.presigned_url.outputs.package_url }}\",\"name\": \"${PACKAGE_NAME}\"}"
 
