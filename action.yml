@@ -28,7 +28,12 @@ runs:
 
     - name: Zip repository
       shell: bash
-      run: zip -r main.zip .
+      env:
+        PACKAGE_NAME: ${{ inputs.package_name }}
+      run: |
+        mkdir $PACKAGE_NAME
+        mv * $PACKAGE_NAME
+        zip -r main.zip $PACKAGE_NAME
 
     - name: Request presigned URL
       id: presigned_url
