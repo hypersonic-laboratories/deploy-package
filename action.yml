@@ -32,7 +32,7 @@ runs:
         PACKAGE_NAME: ${{ inputs.package_name }}
       run: |
         mkdir $PACKAGE_NAME
-        mv * $PACKAGE_NAME
+        mv * $PACKAGE_NAME || true
         zip -r main.zip $PACKAGE_NAME
 
     - name: Request presigned URL
