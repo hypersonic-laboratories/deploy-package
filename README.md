@@ -29,4 +29,4 @@ jobs:
 
 ## Setting Up Secrets
 
-Ensure that the ACCESS_TOKEN secret is set in the repository where you use this action. Navigate to Settings > Secrets > Actions and add a new secret named ACCESS_TOKEN.
+Ensure that the ACCESS_TOKEN secret is set in the repository where you use this action. Navigate to Settings > Secrets > Actions and add a new secret named ACCESS_TOKEN. You can generate an Access Token on the [HELIX Hub](https://hub.helixgame.com/account/tokens).
