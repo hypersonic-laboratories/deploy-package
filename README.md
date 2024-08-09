@@ -1,13 +1,17 @@
 # Deploy Helix Package
 
-Tired of zipping your packages, drag'n'drop them into Hub and not knowing exactly if you are doing it right?. This action will automatically zip your package and upload it to the Helix Platform.
+Tired of zipping your packages, uploading them on the HELIX Hub, and not knowing if you're doing it correctly?. This action will automatically zip relevant parts of your package and upload it as a new version to HELIX.
 
-## Using this your repository
+## Warning
 
-In your other repository, create a workflow file that uses the custom action and provides the `package_name` and `access_token` as an input. For example, in `.github/workflows/upload.yml`:
+Make sure you've created the package on the HELIX Hub first: [https://hub.helixgame.com/creations/packages](https://hub.helixgame.com/creations/packages). This action will fail if you attempt to upload a package that hasn't been created yet.
+
+## Using this Action
+
+In your development repository, create a workflow file in `.github/workflows` that utilizes this Github Action and provides `package_name` and `access_token` as inputs. For example, in `.github/workflows/upload.yml`:
 
 ```yaml
-name: Upload Package to Helix
+name: Deploy new version to HELIX
 
 on:
   push:
