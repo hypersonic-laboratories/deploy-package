@@ -1,12 +1,12 @@
 name: 'Deploy Helix Package'
-description: 'Uploads a Helix automatically'
+description: 'Builds and publishes a new version of a HELIX Package'
 inputs:
   access_token:
-    description: 'Access token for authentication. Can be generated at Account -> Settings'
+    description: 'Access token for authentication. Can be generated on the HELIX Hub: Account -> Access Tokens'
     required: true
     type: string
   package_name:
-    description: 'Name of the package to upload. Make sure you already have this package created'
+    description: 'Name of the package to upload. Make sure you have already created this package in the HELIX Hub or Studio'
     required: true
     type: string
 outputs: {}
@@ -35,7 +35,7 @@ runs:
         mv * $PACKAGE_NAME || true
         zip -r main.zip $PACKAGE_NAME
 
-    - name: Request presigned URL
+    - name: Request upload URL
       id: presigned_url
       shell: bash
       env:
@@ -44,14 +44,20 @@ runs:
       run: |
         response=$(curl --location "https://api.helixgame.com/v1/packages/upload/${PACKAGE_NAME}" \
           --header "Token: ${ACCESS_TOKEN}")
-        echo "upload_url=$(echo $response | jq -r '.payload.upload_url')" >> $GITHUB_OUTPUT
-        echo "package_url=$(echo $response | jq -r '.payload.package_url')" >> $GITHUB_OUTPUT
+        echo "Response: $response"
+        upload_url=$(echo $response | jq -r '.payload.upload_url')
+        package_url=$(echo $response | jq -r '.payload.package_url')
+        echo "upload_url=$upload_url" >> $GITHUB_ENV
+        echo "package_url=$package_url" >> $GITHUB_ENV
+        echo "upload_url=$upload_url"
+        echo "package_url=$package_url"
 
     - name: Upload zip file
       shell: bash
       env:
-        UPLOAD_URL: ${{ steps.presigned_url.outputs.upload_url }}
+        UPLOAD_URL: ${{ env.upload_url }}
       run: |
+        echo "Uploading to: ${UPLOAD_URL}"
         curl --location --request PUT "${UPLOAD_URL}" \
           --header "Content-Type: application/zip" \
           --data-binary "@main.zip"
@@ -61,10 +67,9 @@ runs:
       env:
         PACKAGE_NAME: ${{ inputs.package_name }}
         ACCESS_TOKEN: ${{ inputs.access_token }}
-        PACKAGE_URL: ${{ steps.presigned_url.outputs.package_url }}
+        PACKAGE_URL: ${{ env.package_url }}
       run: |
         curl --location 'https://api.helixgame.com/v1/packages/upload/finish' \
           --header "Content-Type: application/json" \
           --header "Token: ${ACCESS_TOKEN}" \
           --data "{\"url\": \"${PACKAGE_URL}\",\"name\": \"${PACKAGE_NAME}\"}"
-
