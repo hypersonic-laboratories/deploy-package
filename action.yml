@@ -45,6 +45,11 @@ runs:
         response=$(curl --location "https://api.helixgame.com/v1/packages/upload/${PACKAGE_NAME}" \
           --header "Token: ${ACCESS_TOKEN}")
         echo "Response: $response"
+        code=$(echo $response | jq -r '.code')
+        if [ "$code" != "0" ]; then
+          echo "Error: Server returned code $code"
+          exit 1
+        fi
         upload_url=$(echo $response | jq -r '.payload.upload_url')
         package_url=$(echo $response | jq -r '.payload.package_url')
         echo "upload_url=$upload_url" >> $GITHUB_ENV
