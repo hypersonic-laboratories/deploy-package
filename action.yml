@@ -47,7 +47,11 @@ runs:
         echo "Response: $response"
         code=$(echo $response | jq -r '.code')
         if [ "$code" != "0" ]; then
-          echo "Error: Server returned code $code"
+          if [ "$message" == "package corrupted" ]; then
+            echo "Error: Make sure you've created this package on the HELIX Hub first: https://hub.helixgame.com/creations/packages"
+          else
+            echo "Error: Server returned error code $code with message '$message'"
+          fi
           exit 1
         fi
         upload_url=$(echo $response | jq -r '.payload.upload_url')
