@@ -46,6 +46,7 @@ runs:
           --header "Token: ${ACCESS_TOKEN}")
         echo "Response: $response"
         code=$(echo $response | jq -r '.code')
+        message=$(echo $response | jq -r '.message')
         if [ "$code" != "0" ]; then
           if [ "$message" == "package corrupted" ]; then
             echo "Error: Make sure you've created this package on the HELIX Hub first: https://hub.helixgame.com/creations/packages"
