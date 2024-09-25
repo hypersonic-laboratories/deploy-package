@@ -30,9 +30,9 @@ runs:
       run: |
         mkdir $PACKAGE_NAME
         cp Package.toml $PACKAGE_NAME/
-        cp -r Client $PACKAGE_NAME/
-        cp -r Server $PACKAGE_NAME/
-        cp -r Shared $PACKAGE_NAME/
+        mkdir -p Client && cp -r Client $PACKAGE_NAME/
+        mkdir -p Server && cp -r Server $PACKAGE_NAME/
+        mkdir -p Shared && cp -r Shared $PACKAGE_NAME/
         zip -r main.zip $PACKAGE_NAME
 
     - name: Request upload URL
