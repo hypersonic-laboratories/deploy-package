@@ -1,17 +1,20 @@
-name: 'Deploy Helix Package'
-description: 'Builds and publishes a new version of a HELIX Package'
+name: "Deploy Helix Package"
+description: "Builds and publishes a new version of a HELIX Package"
+
 inputs:
   access_token:
-    description: 'Access token for authentication. Can be generated on the HELIX Hub: Account -> Access Tokens'
+    description: "Access token for authentication. Can be generated on the HELIX Hub: Account -> Access Tokens"
     required: true
     type: string
   package_name:
-    description: 'Name of the package to upload. Make sure you have already created this package in the HELIX Hub or Studio'
+    description: "Name of the package to upload. Make sure you have already created this package in the HELIX Hub or Studio"
     required: true
     type: string
+
 outputs: {}
+
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -20,19 +23,16 @@ runs:
       shell: bash
       run: sudo apt-get install -y jq
 
-    - name: Remove .files
-      shell: bash
-      run: |
-        rm -rf .git
-        rm -rf .github
-
     - name: Zip repository
       shell: bash
       env:
         PACKAGE_NAME: ${{ inputs.package_name }}
       run: |
         mkdir $PACKAGE_NAME
-        mv * $PACKAGE_NAME || true
+        cp Package.toml $PACKAGE_NAME/
+        cp -r Client $PACKAGE_NAME/
+        cp -r Server $PACKAGE_NAME/
+        cp -r Shared $PACKAGE_NAME/
         zip -r main.zip $PACKAGE_NAME
 
     - name: Request upload URL
