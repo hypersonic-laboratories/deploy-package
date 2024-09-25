@@ -23,19 +23,16 @@ runs:
       shell: bash
       run: sudo apt-get install -y jq
 
-    - name: Remove .files
-      shell: bash
-      run: |
-        rm -rf .git
-        rm -rf .github
-
     - name: Zip repository
       shell: bash
       env:
         PACKAGE_NAME: ${{ inputs.package_name }}
       run: |
         mkdir $PACKAGE_NAME
-        mv * $PACKAGE_NAME || true
+        cp Package.toml $PACKAGE_NAME/
+        cp -r Client $PACKAGE_NAME/
+        cp -r Server $PACKAGE_NAME/
+        cp -r Shared $PACKAGE_NAME/
         zip -r main.zip $PACKAGE_NAME
 
     - name: Request upload URL
