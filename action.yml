@@ -3,13 +3,11 @@ description: "Builds and publishes a new version of a HELIX Package"
 
 inputs:
   access_token:
-    description: "Access token for authentication. Can be generated on the HELIX Hub: Account -> Access Tokens"
+    description: "Access token for authentication. Can be generated on the HELIX Hub: Account -> Access Tokens."
     required: true
-    type: string
   package_name:
-    description: "Name of the package to upload. Make sure you have already created this package in the HELIX Hub or Studio"
+    description: "Name of the package to upload. Make sure you have already created this package in the HELIX Hub or Studio."
     required: true
-    type: string
 
 outputs: {}
 
