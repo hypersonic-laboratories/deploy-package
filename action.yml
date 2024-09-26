@@ -3,13 +3,15 @@ description: "Builds and publishes a new version of a HELIX Package"
 
 inputs:
   access_token:
-    description: "Access token for authentication. Can be generated on the HELIX Hub: Account -> Access Tokens"
+    description: "Access token for authentication. Can be generated on the HELIX Hub: Account -> Access Tokens."
     required: true
-    type: string
   package_name:
-    description: "Name of the package to upload. Make sure you have already created this package in the HELIX Hub or Studio"
+    description: "Name of the package to upload. Make sure you have already created this package in the HELIX Hub or Studio."
     required: true
-    type: string
+  path:
+    description: "Path to the package folder to upload."
+    required: false
+    default: "."
 
 outputs: {}
 
@@ -27,12 +29,16 @@ runs:
       shell: bash
       env:
         PACKAGE_NAME: ${{ inputs.package_name }}
+        PACKAGE_PATH: ${{ inputs.path }}
       run: |
         mkdir $PACKAGE_NAME
-        cp Package.toml $PACKAGE_NAME/
-        mkdir -p Client && cp -r Client $PACKAGE_NAME/
-        mkdir -p Server && cp -r Server $PACKAGE_NAME/
-        mkdir -p Shared && cp -r Shared $PACKAGE_NAME/
+        cp $PACKAGE_PATH/Package.toml $PACKAGE_NAME/
+
+        # Ensure folders exist before copying to prevent errors
+        mkdir -p $PACKAGE_PATH/Client && cp -r $PACKAGE_PATH/Client/* $PACKAGE_NAME/Client/
+        mkdir -p $PACKAGE_PATH/Server && cp -r $PACKAGE_PATH/Server/* $PACKAGE_NAME/Server/
+        mkdir -p $PACKAGE_PATH/Shared && cp -r $PACKAGE_PATH/Shared/* $PACKAGE_NAME/Shared/
+
         zip -r main.zip $PACKAGE_NAME
 
     - name: Request upload URL
