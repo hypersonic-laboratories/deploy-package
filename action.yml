@@ -35,9 +35,9 @@ runs:
         cp $PACKAGE_PATH/Package.toml $PACKAGE_NAME/
 
         # Ensure folders exist before copying to prevent errors
-        mkdir -p $PACKAGE_PATH/Client && cp -r $PACKAGE_PATH/Client/* $PACKAGE_NAME/Client/
-        mkdir -p $PACKAGE_PATH/Server && cp -r $PACKAGE_PATH/Server/* $PACKAGE_NAME/Server/
-        mkdir -p $PACKAGE_PATH/Shared && cp -r $PACKAGE_PATH/Shared/* $PACKAGE_NAME/Shared/
+        mkdir -p $PACKAGE_PATH/Client && mkdir -p $PACKAGE_NAME/Client && cp -r $PACKAGE_PATH/Client/* $PACKAGE_NAME/Client/
+        mkdir -p $PACKAGE_PATH/Server && mkdir -p $PACKAGE_NAME/Server && cp -r $PACKAGE_PATH/Server/* $PACKAGE_NAME/Server/
+        mkdir -p $PACKAGE_PATH/Shared && mkdir -p $PACKAGE_NAME/Shared && cp -r $PACKAGE_PATH/Shared/* $PACKAGE_NAME/Shared/
 
         zip -r main.zip $PACKAGE_NAME
 
