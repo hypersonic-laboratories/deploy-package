@@ -5,11 +5,8 @@ inputs:
   access_token:
     description: "Access token for authentication. Can be generated on the HELIX Hub: Account -> Access Tokens."
     required: true
-  package_name:
-    description: "Name of the package to upload. Make sure you have already created this package in the HELIX Hub or Studio."
-    required: true
-  path:
-    description: "Path to the package folder to upload."
+  package_path:
+    description: "Path of the package to upload. Omit this to default to `.`."
     required: false
     default: "."
 
@@ -19,7 +16,7 @@ runs:
   using: "composite"
   steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Install jq
       shell: bash
@@ -35,9 +32,9 @@ runs:
         cp $PACKAGE_PATH/Package.toml $PACKAGE_NAME/
 
         # Ensure folders exist before copying to prevent errors
-        mkdir -p $PACKAGE_PATH/Client && cp -r $PACKAGE_PATH/Client/* $PACKAGE_NAME/Client/
-        mkdir -p $PACKAGE_PATH/Server && cp -r $PACKAGE_PATH/Server/* $PACKAGE_NAME/Server/
-        mkdir -p $PACKAGE_PATH/Shared && cp -r $PACKAGE_PATH/Shared/* $PACKAGE_NAME/Shared/
+        mkdir -p $PACKAGE_NAME/Client && cp -r $PACKAGE_PATH/Client/* $PACKAGE_NAME/Client/
+        mkdir -p $PACKAGE_NAME/Server && cp -r $PACKAGE_PATH/Server/* $PACKAGE_NAME/Server/
+        mkdir -p $PACKAGE_NAME/Shared && cp -r $PACKAGE_PATH/Shared/* $PACKAGE_NAME/Shared/
 
         zip -r main.zip $PACKAGE_NAME
 
