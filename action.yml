@@ -6,8 +6,8 @@ inputs:
     description: "Access token for authentication. Can be generated on the HELIX Hub: Account -> Access Tokens."
     required: true
   package_name:
-    description: "Name of the package to upload. Make sure you have already created this package in the HELIX Hub or Studio."
-    required: true
+    description: 'Name of the package'
+    required: false
   master_endpoint:
     description: "Endpoint to use for the API. Defaults to https://api.helixgame.com."
     required: false
@@ -16,6 +16,12 @@ inputs:
     description: "Path to the package folder to upload."
     required: false
     default: "."
+  package_type:
+    description: 'Possible types map gamemode script'
+    required: false
+  description:
+    description: 'Description of the package'
+    required: false
 
 outputs: {}
 
@@ -35,9 +41,7 @@ runs:
         PACKAGE_NAME: ${{ inputs.package_name }}
         PACKAGE_PATH: ${{ inputs.path || '.' }}
       run: |
-        mkdir $PACKAGE_NAME
-
-        # Only copy necessary files & folders
+        mkdir -p $PACKAGE_NAME
         cp $PACKAGE_PATH/Package.toml $PACKAGE_NAME/
         mkdir -p $PACKAGE_PATH/Client && cp -r $PACKAGE_PATH/Client $PACKAGE_NAME/
         mkdir -p $PACKAGE_PATH/Server && cp -r $PACKAGE_PATH/Server $PACKAGE_NAME/
@@ -45,11 +49,36 @@ runs:
 
         zip -r main.zip $PACKAGE_NAME
 
-    - name: Request upload URL
+    - name: Create Package 
+      id: create_package
+      if: ${{ inputs.package_name == '' }}
+      shell: bash
+      env:
+        ACCESS_TOKEN: ${{ inputs.access_token }}
+        MASTER_ENDPOINT: ${{ inputs.master_endpoint }}
+        PACKAGE_NAME: ${{ inputs.package_name  }}
+        PACKAGE_TYPE: ${{ inputs.package_type }}
+        DESCRIPTION: ${{ inputs.description }}
+      run: |
+        RANDOM_DESCRIPTION=$(head /dev/urandom | base64 | head -c 16)
+        RANDOM_TITLE=$(head /dev/urandom | base64 | head -c 16)
+        RANDOM_TITLE=${RANDOM_TITLE,,}
+        [[ -z "$PACKAGE_NAME" ]] && PACKAGE_NAME=$RANDOM_TITLE
+        [[ -z "$DESCRIPTION" ]] && DESCRIPTION=$RANDOM_DESCRIPTION
+        json_payload="{"
+        [ ! -z "$PACKAGE_NAME" ] && json_payload+="\"name\": \"$PACKAGE_NAME\","
+        [ ! -z "$DESCRIPTION" ] && json_payload+="\"description\": \"$DESCRIPTION\","
+        json_payload=$(echo "$json_payload" | sed 's/,$//')"}"
+        echo "Generated JSON Payload: $json_payload"
+        response=$(curl --no-progress-meter --location "${MASTER_ENDPOINT}/packages" --header 'Content-Type: application/json' --header "Token: ${ACCESS_TOKEN}" --data "$json_payload")
+        echo "package_id=$(echo $response | jq -r '.payload.id')" >> $GITHUB_OUTPUT
+        echo "package_name=$(echo $response | jq -r '.payload.name')" >> $GITHUB_OUTPUT
+
+    - name: Request presigned URL
       id: presigned_url
       shell: bash
       env:
-        PACKAGE_NAME: ${{ inputs.package_name }}
+        PACKAGE_NAME: ${{ inputs.package_name || steps.create_package.outputs.package_name }}
         ACCESS_TOKEN: ${{ inputs.access_token }}
         MASTER_ENDPOINT: ${{ inputs.master_endpoint }}
       run: |
