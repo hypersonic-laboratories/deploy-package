@@ -36,12 +36,12 @@ runs:
         PACKAGE_PATH: ${{ inputs.path || '.' }}
       run: |
         mkdir $PACKAGE_NAME
-        cp $PACKAGE_PATH/Package.toml $PACKAGE_NAME/
 
-        # Ensure folders exist before copying to prevent errors
-        mkdir -p $PACKAGE_PATH/Client && mkdir -p $PACKAGE_NAME/Client && cp -r $PACKAGE_PATH/Client/* $PACKAGE_NAME/Client/
-        mkdir -p $PACKAGE_PATH/Server && mkdir -p $PACKAGE_NAME/Server && cp -r $PACKAGE_PATH/Server/* $PACKAGE_NAME/Server/
-        mkdir -p $PACKAGE_PATH/Shared && mkdir -p $PACKAGE_NAME/Shared && cp -r $PACKAGE_PATH/Shared/* $PACKAGE_NAME/Shared/
+        # Only copy necessary files & folders
+        cp $PACKAGE_PATH/Package.toml $PACKAGE_NAME/
+        cp -r $PACKAGE_PATH/Client $PACKAGE_NAME/
+        cp -r $PACKAGE_PATH/Server $PACKAGE_NAME/
+        cp -r $PACKAGE_PATH/Shared $PACKAGE_NAME/
 
         zip -r main.zip $PACKAGE_NAME
 
