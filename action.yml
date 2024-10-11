@@ -5,6 +5,9 @@ inputs:
   access_token:
     description: "Access token for authentication. Can be generated on the HELIX Hub: Account -> Access Tokens."
     required: true
+  create:
+    description: "Create package if it doesn't exist"
+    required: false
   package_name:
     description: 'Name of the package'
     required: false
@@ -37,12 +40,12 @@ runs:
 
     - name: Create Package 
       id: create_package
-      if: ${{ inputs.package_name == '' }}
+      if: ${{ inputs.create != '' }}
       shell: bash
       env:
         ACCESS_TOKEN: ${{ inputs.access_token }}
         MASTER_ENDPOINT: ${{ inputs.master_endpoint }}
-        PACKAGE_NAME: ${{ inputs.package_name  }}
+        PACKAGE_NAME: ${{ inputs.package_name }}
         PACKAGE_TYPE: ${{ inputs.package_type }}
         DESCRIPTION: ${{ inputs.description }}
       run: |
@@ -56,7 +59,7 @@ runs:
         [ ! -z "$DESCRIPTION" ] && json_payload+="\"description\": \"$DESCRIPTION\","
         json_payload=$(echo "$json_payload" | sed 's/,$//')"}"
         echo "Generated JSON Payload: $json_payload"
-        response=$(curl --no-progress-meter --location "${MASTER_ENDPOINT}/packages" --header 'Content-Type: application/json' --header "Token: ${ACCESS_TOKEN}" --data "$json_payload")
+        response=$(curl --no-progress-meter --location "${MASTER_ENDPOINT}/v1/packages" --header 'Content-Type: application/json' --header "Token: ${ACCESS_TOKEN}" --data "$json_payload")
         echo $response
         echo "package_id=$(echo $response | jq -r '.payload.id')" >> $GITHUB_OUTPUT
         echo "package_name=$(echo $response | jq -r '.payload.name')" >> $GITHUB_OUTPUT
