@@ -49,8 +49,8 @@ runs:
         PACKAGE_TYPE: ${{ inputs.package_type }}
         DESCRIPTION: ${{ inputs.description }}
       run: |
-        RANDOM_DESCRIPTION=$(head /dev/urandom | base64 | head -c 16)
-        RANDOM_TITLE=$(head /dev/urandom | base64 | head -c 16)
+        RANDOM_DESCRIPTION=$(head /dev/urandom | base32 | head -c 16)
+        RANDOM_TITLE=$(head /dev/urandom | base32 | head -c 16)
         RANDOM_TITLE=${RANDOM_TITLE,,}
         [[ -z "$PACKAGE_NAME" ]] && PACKAGE_NAME=$RANDOM_TITLE
         [[ -z "$DESCRIPTION" ]] && DESCRIPTION=$RANDOM_DESCRIPTION
