@@ -8,6 +8,10 @@ inputs:
   package_name:
     description: "Name of the package to upload. Make sure you have already created this package in the HELIX Hub or Studio."
     required: true
+  master_endpoint:
+    description: "Endpoint to use for the API. Defaults to https://api.helixgame.com."
+    required: false
+    default: "https://api.helixgame.com"
   path:
     description: "Path to the package folder to upload."
     required: false
@@ -47,8 +51,9 @@ runs:
       env:
         PACKAGE_NAME: ${{ inputs.package_name }}
         ACCESS_TOKEN: ${{ inputs.access_token }}
+        MASTER_ENDPOINT: ${{ inputs.master_endpoint }}
       run: |
-        response=$(curl --location "https://api.helixgame.com/v1/packages/upload/${PACKAGE_NAME}" \
+        response=$(curl --location "${MASTER_ENDPOINT}/v1/packages/upload/${PACKAGE_NAME}" \
           --header "Token: ${ACCESS_TOKEN}")
         echo "Response: $response"
         code=$(echo $response | jq -r '.code')
@@ -83,9 +88,10 @@ runs:
       env:
         PACKAGE_NAME: ${{ inputs.package_name }}
         ACCESS_TOKEN: ${{ inputs.access_token }}
+        MASTER_ENDPOINT: ${{ inputs.master_endpoint }}
         PACKAGE_URL: ${{ env.package_url }}
       run: |
-        curl --location 'https://api.helixgame.com/v1/packages/upload/finish' \
+        curl --location '${MASTER_ENDPOINT}/v1/packages/upload/finish' \
           --header "Content-Type: application/json" \
           --header "Token: ${ACCESS_TOKEN}" \
           --data "{\"url\": \"${PACKAGE_URL}\",\"name\": \"${PACKAGE_NAME}\"}"
