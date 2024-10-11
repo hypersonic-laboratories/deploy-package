@@ -39,9 +39,9 @@ runs:
 
         # Only copy necessary files & folders
         cp $PACKAGE_PATH/Package.toml $PACKAGE_NAME/
-        cp -r $PACKAGE_PATH/Client $PACKAGE_NAME/
-        cp -r $PACKAGE_PATH/Server $PACKAGE_NAME/
-        cp -r $PACKAGE_PATH/Shared $PACKAGE_NAME/
+        mkdir -p $PACKAGE_PATH/Client && cp -r $PACKAGE_PATH/Client $PACKAGE_NAME/
+        mkdir -p $PACKAGE_PATH/Server && cp -r $PACKAGE_PATH/Server $PACKAGE_NAME/
+        mkdir -p $PACKAGE_PATH/Shared && cp -r $PACKAGE_PATH/Shared $PACKAGE_NAME/
 
         zip -r main.zip $PACKAGE_NAME
 
