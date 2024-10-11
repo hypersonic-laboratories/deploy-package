@@ -124,7 +124,7 @@ runs:
         MASTER_ENDPOINT: ${{ inputs.master_endpoint }}
         PACKAGE_URL: ${{ env.package_url }}
       run: |
-        curl --location '${MASTER_ENDPOINT}/v1/packages/upload/finish' \
+        curl --location "${MASTER_ENDPOINT}/v1/packages/upload/finish" \
           --header "Content-Type: application/json" \
           --header "Token: ${ACCESS_TOKEN}" \
           --data "{\"url\": \"${PACKAGE_URL}\",\"name\": \"${PACKAGE_NAME}\"}"
