@@ -40,7 +40,7 @@ runs:
 
     - name: Create Package 
       id: create_package
-      if: ${{ inputs.create != '' }}
+      if: ${{ inputs.create == 'true' }}
       shell: bash
       env:
         ACCESS_TOKEN: ${{ inputs.access_token }}
@@ -59,7 +59,7 @@ runs:
         [ ! -z "$DESCRIPTION" ] && json_payload+="\"description\": \"$DESCRIPTION\","
         json_payload=$(echo "$json_payload" | sed 's/,$//')"}"
         echo "Generated JSON Payload: $json_payload"
-        response=$(curl --no-progress-meter --location "${MASTER_ENDPOINT}/v1/packages" --header 'Content-Type: application/json' --header "Token: ${ACCESS_TOKEN}" --data "$json_payload")
+        response=$(curl --no-progress-meter -X POST --location "${MASTER_ENDPOINT}/v1/packages" --header 'Content-Type: application/json' --header "Token: ${ACCESS_TOKEN}" --data "$json_payload")
         echo $response
         echo "package_id=$(echo $response | jq -r '.payload.id')" >> $GITHUB_OUTPUT
         echo "package_name=$(echo $response | jq -r '.payload.name')" >> $GITHUB_OUTPUT
